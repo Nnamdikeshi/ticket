@@ -10,38 +10,42 @@ public class TicketManager {
 
         Scanner scan = new Scanner(System.in);
 
-        while(true){
+            while (true) {
+                try {
+                System.out.println("1. Enter Ticket\n2. Delete Ticket\n3. Display All Tickets\n4. Quit");
+                int task = Integer.parseInt(scan.nextLine());
 
-            System.out.println("1. Enter Ticket\n2. Delete Ticket\n3. Display All Tickets\n4. Quit");
-            int task = Integer.parseInt(scan.nextLine());
+                if (task == 1) {
+                    //Call addTickets, which will let us enter any number of new tickets
+                    addTickets(ticketQueue);
 
-            if (task == 1) {
-                //Call addTickets, which will let us enter any number of new tickets
-                addTickets(ticketQueue);
+                } else if (task == 2) {
+                    //delete a ticket
+                    deleteTicket(ticketQueue);
 
-            } else if (task == 2) {
-                //delete a ticket
-                deleteTicket(ticketQueue);
+                } else if (task == 4) {
+                    //Quit. Future prototype may want to save all tickets to a file
+                    System.out.println("Quitting program");
+                    break;
+                } else {
+                    //this will happen for 3 or any other selection that is a valid int
+                    //TODO Program crashes if you enter anything else - please fix
+                    //Default will be print all tickets
+                    printAllTickets(ticketQueue);
+                }
+            }catch (NumberFormatException exc) {
+                    System.out.println("Oops! You didn't enter a correct 'number'.\nPlease try again\n");
 
-            } else if ( task == 4 ) {
-                //Quit. Future prototype may want to save all tickets to a file
-                System.out.println("Quitting program");
-                break;
-            }
-            else {
-                //this will happen for 3 or any other selection that is a valid int
-                //TODO Program crashes if you enter anything else - please fix
-                //Default will be print all tickets
-                printAllTickets(ticketQueue);
-            }
+                }
         }
+
 
         scan.close();
 
     }
 
     protected static void deleteTicket(LinkedList<Ticket> ticketQueue) {
-        printAllTickets(ticketQueue);   //display list for user
+        try { printAllTickets(ticketQueue);   //display list for user
 
         if (ticketQueue.size() == 0) {    //no tickets!
             System.out.println("No tickets to delete!\n");
@@ -50,22 +54,33 @@ public class TicketManager {
 
         Scanner deleteScanner = new Scanner(System.in);
         System.out.println("Enter ID of ticket to delete");
-        int deleteID = deleteScanner.nextInt();
+
+            int deleteID = deleteScanner.nextInt();
+
 
         //Loop over all tickets. Delete the one with this ticket ID
+
         boolean found = false;
-        for (Ticket ticket : ticketQueue) {
-            if (ticket.getTicketID() == deleteID) {
-                found = true;
-                ticketQueue.remove(ticket);
-                System.out.println(String.format("Ticket %d deleted", deleteID));
-                break; //don't need loop any more.
+        while (found) {
+            for (Ticket ticket : ticketQueue) {
+                if (ticket.getTicketID() == deleteID) {
+
+                    ticketQueue.remove(ticket);
+                    System.out.println(String.format("Ticket %d deleted", deleteID));
+                    //don't need loop any more.
+                }
+            }
+            if (!found) {
+                System.out.println("Ticket ID not found, no ticket deleted");
+                System.out.println("Enter a different Ticket");
+                found = false;
+                //TODO ï¿½ re-write this method to ask for ID again if not found
             }
         }
-        if (!found) {
-            System.out.println("Ticket ID not found, no ticket deleted");
-            //TODO – re-write this method to ask for ID again if not found
         }
+        catch (InputMismatchException exc) {
+        System.out.println("You entered something other than a integer.\nPlease try again.");
+    }
         printAllTickets(ticketQueue);  //print updated list
 
     }
